@@ -87,7 +87,7 @@ module.exports = {
 			.setDescription(`Warned ${member} \nReason: ${reason}`)
 			.setColor(colors.BLUE)
 			.setTimestamp();
-		const embedMessage = await message.inlineReply(embed);
+		const embedMessage = await message.reply(embed);
 		await embedMessage.react('🗑️');
 		const filter = (reaction, user) => {
 			return ['🗑️'].includes(reaction.emoji.name) && user.id === message.author.id;

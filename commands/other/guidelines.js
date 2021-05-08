@@ -9,7 +9,7 @@ module.exports = {
 	uses: strings.COMMAND_USES_ANYONE,
 	syntax: `${prefix}guidelines`,
 	async execute(client, message, args) {
-		const embedMessage = await message.inlineReply('https://docs.compliancepack.net/pages/textures/texturing-guidelines');
+		const embedMessage = await message.reply('https://docs.compliancepack.net/pages/textures/texturing-guidelines');
 		if (message.channel.type !== 'dm') await embedMessage.react('🗑️');
 
 		const filter = (reaction, user) => {

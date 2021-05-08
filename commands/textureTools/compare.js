@@ -257,7 +257,7 @@ module.exports = {
     }
 
     const attachment = new Discord.MessageAttachment(canvasResult.toBuffer(), 'output.png')
-    const embedMessage = await message.inlineReply(attachment)
+    const embedMessage = await message.reply(attachment)
     
     if (message.channel.type != 'dm') await embedMessage.react('🗑️')
 

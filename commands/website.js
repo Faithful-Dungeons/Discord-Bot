@@ -28,7 +28,7 @@ module.exports = {
 				.setColor(color)
 				.setFooter(title, img);
 
-			const embedMessage = await message.inlineReply(embed);
+			const embedMessage = await message.reply(embed);
 			if (message.channel.type !== 'dm') await embedMessage.react('🗑️');
 
 			const filter = (reaction, user) => {

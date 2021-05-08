@@ -82,7 +82,7 @@ module.exports = {
 				.setFooter(message.client.user.username, settings.BOT_IMG)
 		}
 
-		const embedMessage = await message.inlineReply(embed);
+		const embedMessage = await message.reply(embed);
 		if (message.channel.type !== 'dm') await embedMessage.react('🗑️');
 
 		const filter = (reaction, user) => {

@@ -13,7 +13,7 @@ module.exports = {
 	uses: strings.COMMAND_USES_ANYONE,
 	syntax: `${prefix}stats`,
 	async execute(client, message, args) {
-		if (message.channel.type !== 'dm') await message.inlineReply('Please check your dm\'s!');
+		if (message.channel.type !== 'dm') await message.reply('Please check your dm\'s!');
 
 		let seconds = Math.floor(message.client.uptime / 1000);
 		let minutes = Math.floor(seconds / 60);
@@ -47,6 +47,6 @@ module.exports = {
 			)
 
 		if (message.channel.type !== 'dm') await message.author.send(embed);
-		else await message.inlineReply(embed);
+		else await message.reply(embed);
 	}
 };

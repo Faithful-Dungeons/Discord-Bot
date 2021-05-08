@@ -69,7 +69,7 @@ async function quote(msg) {
 				if (file.endsWith('.png') || file.endsWith('.jpg') || file.endsWith('jpeg')) embed.setImage(file)
 			}
 		
-			return await msg.inlineReply(embed)
+			return await msg.reply(embed)
 		}
 
 		else {
@@ -95,7 +95,7 @@ async function quote(msg) {
 				}
 			}
 
-			await msg.inlineReply(embed)
+			await msg.reply(embed)
 			return
 		}
 	}

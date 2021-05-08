@@ -94,5 +94,5 @@ function showProfile(message, username = 'None', uuid = 'None', type = 'member')
 		.setColor(colors.BLUE)
 		.setFooter(message.client.user.username, settings.BOT_IMG);
 
-	return message.inlineReply(embed);
+	return message.reply(embed);
 }

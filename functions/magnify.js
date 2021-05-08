@@ -47,7 +47,7 @@ function magnify(message, url) {
 		}
 
 		const attachment   = new Discord.MessageAttachment(canvasResult.toBuffer(), 'magnified.png');
-		const embedMessage = await message.inlineReply(attachment);
+		const embedMessage = await message.reply(attachment);
 
 		if (message.channel.type !== 'dm')  await embedMessage.react('🗑️');
 

@@ -10,10 +10,9 @@ require('dotenv').config()
 const Discord   = require('discord.js')
 const http      = require('http')
 const cron      = require('cron')
-const client    = new Discord.Client({ disableMentions: 'everyone', restTimeOffset: 0 })
+const client    = new Discord.Client({ allowedMentions: { parse: ['users', 'roles'], repliedUser: false }, restTimeOffset: 0 })
 client.commands = new Discord.Collection()
 const PORT      = 3000
-require("./modified_libraries/ExtendedMessage")
 
 // Admins & settings:
 const UIDA = [
@@ -210,7 +209,7 @@ client.on('message', async message => {
 	if (!message.content.startsWith(prefix) || message.author.bot) return // Avoid message WITHOUT prefix & bot messages
 
 	if (MAINTENANCE && !UIDA.includes(message.author.id)) {
-		const msg = await message.inlineReply(strings.COMMAND_MAINTENANCE)
+		const msg = await message.reply(strings.COMMAND_MAINTENANCE)
 		await message.react('❌')
 		if (!message.deleted) await msg.delete({timeout: TIME})
 	}
@@ -229,7 +228,7 @@ client.on('message', async message => {
 			.setTitle(strings.BOT_ERROR)
 			.setDescription(strings.COMMAND_ERROR)
 
-		await message.inlineReply(embed)
+		await message.reply(embed)
 		await message.react('❌')
 	})
 })
@@ -250,7 +249,7 @@ client.on('message', async message => {
 	/*
 	 * Funny Stuff
 	 */
-	if (message.content.includes('(╯°□°）╯︵ ┻━┻')) return await message.inlineReply('┬─┬ ノ( ゜-゜ノ) calm down bro')
+	if (message.content.includes('(╯°□°）╯︵ ┻━┻')) return await message.reply('┬─┬ ノ( ゜-゜ノ) calm down bro')
 	if (message.content.toLowerCase().includes('engineer gaming')) return await message.react('👷‍♂️')
 	if (message.content === 'F') return await message.react('🇫')
 
@@ -260,7 +259,7 @@ client.on('message', async message => {
 			.setDescription('```Uh-oh moment```')
 			.setColor(colors.BLUE)
 			.setFooter('Swahili → English', settings.BOT_IMG)
-		return await message.inlineReply(embed)
+		return await message.reply(embed)
 	}
 
 	if (message.content.toLowerCase() === 'band') {
