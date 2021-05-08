@@ -21,7 +21,7 @@ module.exports = {
 	example: `${prefix}unmute @Domi#5813 not posting memes in #general`,
 	async execute(client, message, args) {
 
-		if (!message.member.hasPermission('BAN_MEMBERS')) return await warnUser(message, strings.COMMAND_NO_PERMISSION);
+		if (!message.member.permissions.has('BAN_MEMBERS')) return await warnUser(message, strings.COMMAND_NO_PERMISSION);
 
 		if (!args.length) return warnUser(message, strings.COMMAND_NO_ARGUMENTS_GIVEN);
 

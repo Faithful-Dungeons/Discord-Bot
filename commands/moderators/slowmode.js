@@ -15,7 +15,7 @@ module.exports = {
 	example: `${prefix}slowmode 10`,
 	async execute(client, message, args) {
 
-		if (!message.member.hasPermission('MANAGE_CHANNELS')) return await warnUser(message, strings.COMMAND_NO_PERMISSION);
+		if (!message.member.permissions.has('MANAGE_CHANNELS')) return await warnUser(message, strings.COMMAND_NO_PERMISSION);
 
 		if (!args.length) return warnUser(message, strings.COMMAND_NO_ARGUMENTS_GIVEN);
 

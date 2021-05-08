@@ -25,7 +25,7 @@ module.exports = {
 	example: `${prefix}contributor -p=entity/slime/magmacube -t=java -s=c32 -a=Someone#1234 -u=true\n${prefix}contributor -p=entity/slime/magmacube -t=java -s=c32 -a=Someone#1234 -A=false`,
 	async execute(client, message, args) {
 
-		if (!message.member.hasPermission('ADMINISTRATOR') && message.author.id !== uidT) return warnUser(message, strings.COMMAND_NO_PERMISSION)
+		if (!message.member.permissions.has('ADMINISTRATOR') && message.author.id !== uidT) return warnUser(message, strings.COMMAND_NO_PERMISSION)
 
 		if (args[0] == 'update') {
 			autoPush('Compliance-Resource-Pack', 'JSON', 'main', `Manual Update executed by: ${message.author.username}`, `./json`);

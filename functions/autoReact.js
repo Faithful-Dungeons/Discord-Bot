@@ -12,7 +12,7 @@ const strings  = require('../res/strings')
  * @param {String} specificErrorMsg Message if one or more string from 'specific' can not be found
  * @param {Array} specific Array of String
  */
-async function autoReact(message, emojis, defaultErrorMsg, specificErrorMsg = undefined, specific = undefined) {
+async function autoReact(client, message, emojis, defaultErrorMsg, specificErrorMsg = undefined, specific = undefined) {
 
 	if (message.attachments.size > 0) {
 
@@ -47,7 +47,7 @@ async function autoReact(message, emojis, defaultErrorMsg, specificErrorMsg = un
 
 		if (
 			(
-				message.member.hasPermission('ADMINISTRATOR')
+				message.member.permissions.has('ADMINISTRATOR')
 			) && specificError == false
 		) return
 
@@ -63,8 +63,8 @@ async function autoReact(message, emojis, defaultErrorMsg, specificErrorMsg = un
 				else embed.setDescription(defaultErrorMsg)
 
 				const msg = await message.channel.send(embed)
-				if (!msg.deleted) await msg.delete({timeout: 30000})
-				if (!message.deleted) await message.delete({timeout: 10})
+				if (!msg.deleted) await client.setTimeout(() => msg.delete(), 30000);
+				if (!message.deleted) await client.setTimeout(() => message.delete(), 10);
 			} catch (error) {
 					console.error(error)
 			}

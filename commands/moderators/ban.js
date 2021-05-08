@@ -19,9 +19,9 @@ module.exports = {
     const reason = args.slice(1).join(' ') || 'Not Specified';
 		const bob    = message.guild.members.cache.get(client.user.id);
 
-		if (!bob.hasPermission('BAN_MEMBERS')) return await warnUser(message, strings.BAN_BOT_NO_PERMISSION);
+		if (!bob.permissions.has('BAN_MEMBERS')) return await warnUser(message, strings.BAN_BOT_NO_PERMISSION);
 
-		if (!message.member.hasPermission('BAN_MEMBERS')) return await warnUser(message, strings.COMMAND_NO_PERMISSION);
+		if (!message.member.permissions.has('BAN_MEMBERS')) return await warnUser(message, strings.COMMAND_NO_PERMISSION);
 
 		if (!args.length) return warnUser(message, strings.COMMAND_NO_ARGUMENTS_GIVEN);
 

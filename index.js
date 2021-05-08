@@ -125,7 +125,7 @@ client.on('ready', async () => {
 	console.log(`│                                                             │`)
 	console.log(`└─────────────────────────────────────────────────────────────┘\n\n`)
 
-	if (MAINTENANCE) client.user.setPresence({ activity: { name: 'maintenance' }, status: 'dnd' })
+	if (MAINTENANCE) client.user.setPresence({ activities: [{ name: 'maintenance' }], status: 'dnd' })
 	else client.user.setActivity('/help', {type: 'LISTENING'})
 
 	/**
@@ -209,9 +209,8 @@ client.on('message', async message => {
 	if (!message.content.startsWith(prefix) || message.author.bot) return // Avoid message WITHOUT prefix & bot messages
 
 	if (MAINTENANCE && !UIDA.includes(message.author.id)) {
-		const msg = await message.reply(strings.COMMAND_MAINTENANCE)
+		await message.reply(strings.COMMAND_MAINTENANCE)
 		await message.react('❌')
-		if (!message.deleted) await msg.delete({timeout: TIME})
 	}
 	
 	const args        = message.content.slice(prefix.length).trim().split(/ +/)
@@ -296,6 +295,7 @@ client.on('message', async message => {
 	// Texture submission Compliance 32x (#submit-texture):
 	if (message.channel.id === settings.C32_SUBMIT_1 || message.channel.id === settings.C32_SUBMIT_1B) {
 		return autoReact(
+			client,
 			message,
 			['⬆️','⬇️'],
 			strings.SUBMIT_NO_FILE_ATTACHED,
@@ -307,6 +307,7 @@ client.on('message', async message => {
 	// Texture submission Compliance 64x (#submit-texture):
 	if (message.channel.id === settings.C64_SUBMIT_1 || message.channel.id === settings.C64_SUBMIT_1B) {
 		return autoReact(
+			client,
 			message,
 			['⬆️','⬇️'],
 			strings.SUBMIT_NO_FILE_ATTACHED,
@@ -318,6 +319,7 @@ client.on('message', async message => {
 	// Texture submission Compliance Dungeons:
 	if (message.channel.id === settings.CDUNGEONS_SUBMIT) {
 		return autoReact(
+			client,
 			message,
 			['⬆️','⬇️'],
 			strings.SUBMIT_NO_FILE_ATTACHED,
@@ -329,6 +331,7 @@ client.on('message', async message => {
 	// Texture submission Emulated Vattic Textures (FHLX):
 	if (message.channel.id === '814209343502286899' || message.channel.id === '814201529032114226') {
 		return autoReact(
+			client,
 			message,
 			['814569395493011477','814569427546144812'],
 			strings.SUBMIT_NO_FILE_ATTACHED
