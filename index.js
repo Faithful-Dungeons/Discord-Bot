@@ -42,6 +42,7 @@ const { doPush }            = require('./functions/doPush.js')
 const { checkTimeout }      = require('./functions/moderation/checkTimeout.js')
 const { addMutedRole }      = require('./functions/moderation/addMutedRole.js')
 const { inviteDetection }   = require('./functions/moderation/inviteDetection.js')
+const { textureIDQuote } = require('./functions/textures/textureIDQuote')
 
 // try to read this json
 jsonModeration.read(false).then(warnList => { // YOU MUST NOT LOCK because only read
@@ -252,7 +253,7 @@ client.on('message', async message => {
 	if (message.content.toLowerCase().includes('engineer gaming')) return await message.react('👷‍♂️')
 	if (message.content === 'F') return await message.react('🇫')
 
-	if (message.content.toLowerCase().includes('mhhh')) {
+	if (message.content.toLowerCase() === 'mhhh') {
 		const embed = new Discord.MessageEmbed()
 			.setAuthor(`${message.author.tag} translated: ${message.content}`, message.author.displayAvatarURL())
 			.setDescription('```Uh-oh moment```')
@@ -278,6 +279,16 @@ client.on('message', async message => {
 	 * @author Juknum
 	 */
 	if (message.content.includes('https://canary.discord.com/channels/') || message.content.includes('https://discord.com/channels/') || message.content.includes('https://discordapp.com/channels')) quote(message)
+
+	/**
+	 * DESACTIVATED !!
+	 * TEXTURE ID QUOTE
+	 * when someone type #1234, send an embed with the given texture id
+	 * @author Juknum
+	 * @TODO: add Compare textures inside the embed, the compare command needs to be split into functions first
+	 * @TODO: add Co-Authors as co-authors (the database should be updated to specify when a texture has co-authors)
+	 */
+	// textureIDQuote(message, message.content);
 
 	/**
 	 * DISCORD SERVER INVITE DETECTION
@@ -342,9 +353,9 @@ client.on('message', async message => {
 /*client.on("error", (e) => console.error(e))
 client.on("warn", (e) => console.warn(e))
 client.on("debug", (e) => console.info(e))
-client.on('debug', console.log)*/
+client.on('debug', console.log)
 
-client.on('rateLimit', (e) => console.log(e))
+client.on('rateLimit', (e) => console.log(e))*/
 
 }).catch(error => {
 	console.trace(error)
