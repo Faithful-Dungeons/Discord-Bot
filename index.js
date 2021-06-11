@@ -9,10 +9,8 @@
 require('dotenv').config()
 const Discord   = require('discord.js')
 const cron      = require('cron')
-const http      = require('http')
 const client    = new Discord.Client({ disableMentions: 'everyone', restTimeOffset: 0, partials: Object.values(Discord.Constants.PartialTypes) })
 client.commands = new Discord.Collection()
-const PORT      = 3000
 require("./modified_libraries/ExtendedMessage")
 
 // Admins & settings:
@@ -94,13 +92,9 @@ function doMCUpdateCheck () {
 }
 
 /** 
- * BOT HEARTBEAT:
- * Keep the bot alive on repl.it
+ * BOT WEB APP:
  */
-http.createServer((req, res) => {
-  res.write("h");
-  res.end();
-}).listen(PORT, () => console.log(`listening at http://localhost:${PORT}`));
+require('./webapp/app')
 
 /**
  * COMMAND HANDLER

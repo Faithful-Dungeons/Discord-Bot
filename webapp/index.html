@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <link rel="shortcut icon" href="https://compliancepack.net/favicon.ico" type="image/x-icon">
+  <title>CompliBot - Web interface</title>
+</head>
+<body>
+  <v-app id="app">
+    <v-app-bar flat dense bar app :color="bg">
+      <span class="mr-2 d-flex noselect">
+        <img src="https://compliancepack.net/image/home/logo.png" style="max-height: 100%; height: 30px; filter: brightness(0) invert(1);"><span class="px-2 subtitle-1"> Web app</span>
+      </span>
+      <v-tabs v-model="currenttab" :value="tabselected">
+        <v-tab v-for="(tab, index) in tabs" :key="tab.to" :to="tab.to">{{ tab.label }}</v-tab>
+      </v-tabs>
+    </v-app-bar>
+
+    <v-main>
+      <div>
+        <router-view></router-view>
+      </div>
+    </v-main>
+
+    <v-bottom-navigation height="42px" id="bottom">
+      &copy; Compliance Team {{ year }}
+    </v-bottom-navigation>
+
+    <v-snackbar
+      v-model="snackbar.show"
+      :timeout="snackbar.timeout"
+      :color="snackbar.color"
+      bottom
+      right
+    >
+      {{ snackbar.message }}
+    </v-snackbar>
+  </v-app>
+
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/twin-bcrypt@2/twin-bcrypt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue-router@3.5.1/dist/vue-router.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <link rel="stylesheet" href="/webapp.css">
+  <script src="/webapp.js" type="module"></script>
+</body>
+</html>

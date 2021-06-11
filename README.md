@@ -9,7 +9,7 @@
 </div>
 
 ___
-### Online on:
+## Online on  
 - [Compliance 32x](https://discord.gg/sN9YRQbBv7)
 - [Compliance 64x](https://discord.gg/Tqtwtgh)
 - [Compliance Addons](https://discord.gg/qVeDfZw)
@@ -18,25 +18,40 @@ ___
 - [Compliance Mods](https://discord.gg/QF2CAX7)
 
 ___
-### Installation and launching:
+## Installation and launching
 - Install **[Node.js](https://nodejs.org/)** on your machine. **Version 14.0.0 or newer is required!**
 - Clone the repository on your machine.
 - Open your console in the cloned repository.
 - To complete the installation, write the following command in the console:
 ```console
-npm install
+npm install --save-dev
 ```
 - After installation, you will need to **[configure the bot](#bot-config:)**.
 - To start the bot, write the following command in the console:
 ```console
 node .
 ```
+
 - Or when you're on Windows, you can just open the `start.bat` file
 
 ___
-### Bot config:
+## Web app
 
-**DISCLAIMER: We won't help you rebranding the bot for any other server. If you really want to do that, then you need to figure it out yourself.**
+To only start the web app :
+
+```
+npm run webapponly
+```
+
+And go to :
+```
+http://localhost:3000/webapp
+```
+
+___
+## Bot config
+
+> **:warning: We won't help you rebranding the bot for any other server. If you really want to do that, then you need to figure it out yourself.**
 
 - Create an app on the **[Discord Developer Portal](https://discord.com/developers/)**.
 - Go to the **Bot** tab, create a bot and copy its token.
@@ -55,10 +70,10 @@ ___
 |COMPLIBOT_GIT_EMAIL|"CompliBot@users.noreply.github.com"|Git email for the CompliBot account.|
 |COMPLIBOT_GIT_JSON_REPO|"/Compliance-Resource-Pack/JSON/"|Github repository to push/pull json files.|
 |COMPLIBOT_GIT_TOKEN|"a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0"|Git token for the CompliBot account to push textures.|
-|MODS|"987654321987654321"|The id's of all people with a moderator role or higher, used for the modping command.|
 
 #### Other configs:
 
-- `res/colors.js` for embed colors
-- `res/strings.js` for embed or message texts
-- `settings.js` for role and channel id's
+- `ressources/colors.js` for embed colors
+- `ressources/emojis.js` for custom emojis use
+- `ressources/strings.js` for embed or message texts
+- `ressources/settings.js` for role, URL and channel id's
