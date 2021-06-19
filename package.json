@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node --use_strict --trace-warnings index.js",
+    "dev": "./node_modules/.bin/nodemon *.js",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
   "repository": {
@@ -39,6 +40,7 @@
     "twin-bcrypt": "^2.1.1"
   },
   "devDependencies": {
-    "eslint": "^7.26.0"
+    "eslint": "^7.26.0",
+    "nodemon": "^2.0.7"
   }
 }

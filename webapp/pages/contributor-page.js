@@ -1,3 +1,4 @@
+/* global axios, Vue */
 const ContributorModal = () => import('./contributor-modal.js')
 const ContributorRemoveConfirm = () => import('./contributor-remove-confirm.js')
 
@@ -52,7 +53,7 @@ export default {
               <v-list-item-content>
                 <v-list-item-title v-text="contrib.username"></v-list-item-title>
 
-                <v-list-item-subtitle v-text="contrib.type"></v-list-item-subtitle>
+                <v-list-item-subtitle v-text="(contrib.type||[]).join(', ')"></v-list-item-subtitle>
               </v-list-item-content>
 
               <v-list-item-action>

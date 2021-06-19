@@ -1,8 +1,10 @@
+/* global __dirname */
+
 const path = require('path')
 const express = require('express')
-const bodyParser = require("body-parser");
 const contributor = require('./ContributorBackend')
 const contributions = require('./backend/contribution')
+const contributors_backend = require('./backend/contributor')
 const TwinBcrypt = require('twin-bcrypt')
 require('dotenv').config()
 
@@ -54,13 +56,10 @@ app.get('/contributions/:edition?/:search?/', function(req, res) {
   })
 })
 
-let lastTypes = undefined
-
 app.get('/contributors/types', function(req, res) {
-  contributor.contributors.types()
+  contributors_backend.userTypes()
   .then(val => {
     res.setHeader('Content-Type', 'application/json')
-    lastTypes = val
     res.send(val)
   })
   .catch(err => {
@@ -73,27 +72,16 @@ app.get('/contributors/types', function(req, res) {
   })
 })
 
-/**
- * Get the contributors depending some criterias
- * @param {Request} req the incoming request
- * @param {*} res the result to send
- */
-function GetContributors(req, res) {
-  if(!lastTypes) {
-    contributor.contributors.types()
-    .then(val => {
-      lastTypes = val
-      GetContributors(req, res)
-    })
-    return
-  }
+app.get('/contributors/:type?/:name?/?', function(req, res) {
+  let username, type
 
-  if(!req.params.name && lastTypes && !lastTypes.includes(req.params.type)) {
-    const tmp = req.params.type
-    req.params.type = req.params.name
-    req.params.name = tmp
+  if(! ('name' in req.params))
+    username = req.params.type
+  else {
+    type = req.params.type
+    username = req.params.name
   }
-  contributor.contributors.get(req.params.name, req.params.type)
+  contributors_backend.search(username, type)
   .then(val => {
     res.setHeader('Content-Type', 'application/json')
     res.send(val)
@@ -106,9 +94,7 @@ function GetContributors(req, res) {
   .finally(() => {
     res.end()
   })
-}
-
-app.get('/contributors/:type?/:name?/?', GetContributors)
+})
 
 app.post('/contributors/change', function(req, res) {
   if(!req.body.password || !process.env.WEBAPP_PASSWORD || !TwinBcrypt.compareSync(process.env.WEBAPP_PASSWORD, req.body.password)) {
@@ -116,19 +102,11 @@ app.post('/contributors/change', function(req, res) {
     res.end()
     return
   }
-
-  const push = !!req.body.pushToGithub
   
-  contributor.contributors.change(req.body)
+  contributors_backend.change(req.body)
   .then(() => {
-    if(push) {
-      console.error('puuush it')
-      res.status(500).send({error: 'Saved but you need to push it'})
-      res.end()
-    } else {
-      res.status(200)
-      res.end()
-    }
+    res.status(200)
+    res.end()
   })
   .catch(err => {
     console.error(err)

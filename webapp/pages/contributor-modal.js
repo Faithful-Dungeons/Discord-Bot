@@ -1,3 +1,4 @@
+/* global axios, TwinBcrypt, Vue */
 export default {
 	name: 'contributor-modal',
 	template: `
@@ -14,15 +15,17 @@ export default {
               <img alt="avatar" style="width: 100%; max-width: 250" :src="($vuetify.breakpoint.mdAndUp ? 'https://crafatar.com/renders/body/' : 'https://crafatar.com/renders/head/') + formData.uuid + '?default=MHF_Alex&scale=10&overlay'" />
             </v-col><v-col :class="'col-' + formData.uuid ? '10' : '12'" :sm="formData.uuid ? ($vuetify.breakpoint.mdAndUp ? 9 : 10) : 12">
               <v-form ref="form" lazy-validation>
+              <v-text-field required readonly v-model="formData.id" label="Discord ID"></v-text-field>
+
                 <v-text-field required clearable v-model="formData.username" label="Username"></v-text-field>
 
-                <v-select required v-model="formData.type" :items="types" label="Contributor type"></v-select>
+                <v-select required multiple v-model="formData.type" :items="types" label="Contributor type"></v-select>
         
                 <v-text-field required clearable v-model="formData.uuid" label="Minecraft profile UUID"></v-text-field>
+
+                <v-divider class="my-2"></v-divider>
         
                 <v-text-field required clearable type="password" v-model="formData.password" label="Security password" hint="must match .env password"></v-text-field>
-                
-                <v-checkbox required v-model="formData.pushToGithub" label="Push to GitHub"></v-checkbox>
               </v-form>
             </v-col>
           </v-row>
@@ -77,8 +80,7 @@ export default {
         username: '',
         type: undefined,
         uuid: '',
-        password: 'NeverGonnaGiveYouUp',
-        pushToGithub: true
+        id: ''
       }
 		}
 	},
@@ -93,14 +95,13 @@ export default {
       data.password = TwinBcrypt.hashSync(data.password)
       
       axios.post('/contributors/change', data)
-      .then(_response => {
+      .then(() => {
         this.$root.showSnackBar('Ended successully', 'success')
         this.disableDialog(true)
       })
       .catch(error => {
         console.error(error)
         this.$root.showSnackBar(`${error.message} : ${error.response.data.error}`, 'error')
-        this.disableDialog(true)
       });
     }
   },

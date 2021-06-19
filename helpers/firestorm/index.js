@@ -298,7 +298,7 @@ class Collection {
    */
   editField(obj) {
     const data = this.__write_data('editField', obj, undefined)
-    return this.__extract_data(axios.post(writeAddress()), data)
+    return this.__extract_data(axios.post(writeAddress(), data))
   }
 
   /**
@@ -308,7 +308,7 @@ class Collection {
    */
   editFieldBulk(objArray) {
     const data = this.__write_data('editFieldBulk', objArray, undefined)
-    return this.__extract_data(axios.post(writeAddress()), data)
+    return this.__extract_data(axios.post(writeAddress(), data))
   }
 }
 
