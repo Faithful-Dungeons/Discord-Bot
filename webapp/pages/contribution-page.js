@@ -16,7 +16,7 @@ export default {
     <div class="my-2 text-h5">Contributor</div>
     <v-responsive
       class="overflow-y-auto"
-      max-height="300"
+      max-height="250"
     >
       <v-list v-if="contributors.length" two-line color="transparent">
         <v-row>
