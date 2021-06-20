@@ -3,6 +3,7 @@
 const path = require('path')
 const express = require('express')
 const contributions = require('./backend/contribution')
+const contributions_backend = require('./backend/contributions')
 const contributors_backend = require('./backend/contributor')
 const TwinBcrypt = require('twin-bcrypt')
 require('dotenv').config()
@@ -38,10 +39,41 @@ app.post('/contributor', function(req, res) {
   res.end()
 })
 
-app.get('/contributions/:edition?/:search?/', function(req, res) {
-  contributions.get(req.params.edition, req.params.search)
+app.get('/contributions/res/?', function(req, res) {
+  contributions_backend.resolutions()
   .then(val => {
-    console.log(val)
+    res.setHeader('Content-Type', 'application/json')
+    res.send(val)
+  })
+  .catch(err => {
+    console.trace(err)
+    res.status(400)
+    res.send(err)
+  })
+  .finally(() => {
+    res.end()
+  })
+})
+
+app.get('/contributions/authors/?', function(req, res) {
+  contributions_backend.authors()
+  .then(val => {
+    res.setHeader('Content-Type', 'application/json')
+    res.send(val)
+  })
+  .catch(err => {
+    console.trace(err)
+    res.status(400)
+    res.send(err)
+  })
+  .finally(() => {
+    res.end()
+  })
+})
+
+app.get('/contributions/get/', function(req, res) {
+  contributions_backend.search(req.params.resolutions, req.params.authors)
+  .then(val => {
     res.setHeader('Content-Type', 'application/json')
     res.send(val)
   })

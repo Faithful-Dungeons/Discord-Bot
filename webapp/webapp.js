@@ -5,9 +5,8 @@ const ContributorPage = () => import('./pages/contributor-page.js')
 Vue.config.devtools = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
 
 const routes = [
-	{ path: '/', redirect: '/contributions/java/' },
-	{ path: '/contributions/', redirect: '/contributions/java/' },
-	{ path: '/contributions/:edition?/:search?/', component: ContributionPage },
+	{ path: '/', redirect: '/contributions/' },
+	{ path: '/contributions/', component: ContributionPage },
 	{ path: '/contributors/', redirect: '/contributors/all/' },
   { path: '/contributors/:type?/:name?/', component: ContributorPage }
 ]

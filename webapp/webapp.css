@@ -8,6 +8,13 @@ a { text-decoration: none; }
   user-select: none;
 }
 
+* {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	outline: none;
+}
+
 #app {
   background: #120E19 url(https://compliancepack.net/image/background/the_end.jpg) no-repeat center;
   background-attachment: fixed;

@@ -1,3 +1,5 @@
+/* global axios, Vue */
+
 export default {
 	name: 'contribution-page',
 	template: `
@@ -5,169 +7,117 @@ export default {
     <div class="text-h4 py-4">
       Contributions
     </div>
-    <div class="my-2 text-h5">Edition</div>
-    <div><v-btn v-for="e in editions" :key="e" class="my-2 mr-1" :to="contributionURL(e)" :exact="false">{{ e }}</v-btn></div>
-
-    <div class="my-2 text-h5">Search</div>
-    <div class="my-2">
-      <v-text-field
-        v-model="searchInput"
-        :append-outer-icon="searchInput ? 'mdi-send' : undefined"
-        filled
-        clear-icon="mdi-close"
-        clearable
-        placeholder="Search texture name or author"
-        type="text"
-        v-on:keyup.enter="startSearch"
-        @click:append-outer="startSearch"
-        @click:clear="clearSearch"
-      ></v-text-field>
+    <div class="my-2 text-h5">Resolution</div>
+    <div>
+      <v-btn v-for="(value, key, index) in resolutions" :key="index" class="my-2 mr-1">
+        <v-checkbox v-model="resolutions[key]" :disabled="key != all_res && resolutions[all_res] == true" :label="key" :id="key"></v-checkbox>
+      </v-btn>
     </div>
+    <div class="my-2 text-h5">Contributor</div>
+    <v-responsive
+      class="overflow-y-auto"
+      max-height="300"
+    >
+      <v-list v-if="contributors.length" two-line color="transparent">
+        <v-row>
+          <v-col :cols="12/listColumns" xs="1"
+            v-for="(contrib_arr, index) in splittedContributors"
+            :key="index"
+          >
+            <v-card
+              elevation="2"
+              class="my-2"
+              v-for="contrib in contrib_arr"
+              :key="contrib.id"
+            >
+              <v-list-item>
+                <v-list-item-avatar>
+                  <v-img v-if="contrib.uuid" :src="'https://crafatar.com/renders/head/' + contrib.uuid + '?scale=2&default=MHF_Alex&overlay'" />
+                  <v-icon v-else style="background: #4e4e4e">mdi-account</v-icon>
+                </v-list-item-avatar>
 
-    <div class="my-2">
-      <v-row>
-        <v-col cols="3" v-for="c in contributions" :key="c">{{ JSON.stringify(c) }}</v-col>
-      </v-row>
-    </div>
+                <v-list-item-content>
+                  <v-list-item-title v-text="contrib.username"></v-list-item-title>
+                  <v-list-item-subtitle v-text="contrib.occurences + ' contributions'"></v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-list>
+    </v-responsive>
   </v-container>`,
 	data() {
 		return {
-      // editions: ['java', 'bedrock'],
-      resolutions: ['c32', 'c64'],
-      addElseRemoveAuthorLabels: ['Add author', 'Remove author'],
-      formData : {
-        edition: 'java',
-        resolution: 'c32',
-  
-        texturePath: '/item/bucket',
-  
-        addElseRemoveAuthor: true,
-        discordTag: 'TheRolf#8604',
-        
-        pushToGithub: false,
-  
-        password: "TheRolfIsTheBest",
-      },
-      searchInput: '',
-      contributions: []
-		}
+      all_res: 'all',
+      resolutions: {},
+      contributors: [],
+      contributors_selected: {}
+    }
 	},
   computed: {
-    edition: function() {
-      return this.$route.params.edition
+    listColumns: function() {
+      let columns = 1
+
+      if(this.$vuetify.breakpoint.mdAndUp && this.contributors.length >= 6) {
+        columns = 2
+        if(this.$vuetify.breakpoint.lgAndUp && this.contributors.length >= 21) {
+          columns = 3
+        }
+      }
+
+      return columns
     },
-    search: function() {
-      return this.$route.params.search
+    splittedContributors: function() {
+      let res = []
+      for(let col = 0; col < this.listColumns; ++col) {
+        res.push([])
+      }
+
+      let arrayIndex = 0;
+      this.contributors.forEach(contrib => {
+        res[arrayIndex].push(contrib)
+        arrayIndex = (arrayIndex + 1) % this.listColumns
+      })
+
+      return res
     }
   },
   methods: {
-    contributionURL: function(edition) {
-      const path = this.$route.path.split('/')
-
-      // find edition in split path
-      let editionIndex = -1
-      let i = 0
-      while(i < path.length && editionIndex == -1) {
-        if(this.editions.includes(path[i]))
-          editionIndex = i
-
-        ++i
-      }
-
-      path.splice(editionIndex)
-
-      path.push(edition)
-
-      if(this.search)
-        path.push(this.search)
-
-      path.push('')
-      
-      return path.join('/')
+    getRes: function() {
+      axios.get('/contributions/res')
+        .then(res => {
+          res.data.forEach(r => this.resolutions[r] = false)
+          this.$forceUpdate()
+        })
+    },
+    getAuthors: function() {
+      axios.get('/contributions/authors/')
+        .then(res => {
+          this.contributors = res.data
+        })
+        .catch(err => {
+          console.trace(err)
+        })
     },
     getContributions: function() {
-      axios.get('/contributions/' + this.edition + '/' + (this.search ? this.search + '/' : ''))
+      axios.get('/contributions/get/', {
+        params: {
+          resolutions: this.searchForm.resolutions,
+          authors: this.searchForm.authors
+        }
+      })
       .then(res => {
         this.contributions = res
       })
       .catch(err => { this.$root.showSnackBar(err, 'error') })
-    },
-    send() {
-      const data = JSON.parse(JSON.stringify(this.formData))
-      data.password = makeid(24)
-      
-      axios.post('http://localhost:3000/contributor', data)
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-    },
-    startSearch: function() {
-      // ok so url is /whatever/<edition>/ => /whatever/<edition>/<search>/
-      // ok so url is /whatever/<edition>/<oldSearch>/ => /whatever/<edition>/<newSearch>/
-      const path = this.$route.path.split('/')
-
-      // find edition in split path
-      let editionIndex = -1
-      let i = 0
-      while(i < path.length && editionIndex == -1) {
-        if(this.editions.includes(path[i]))
-          editionIndex = i
-
-        ++i
-      }
-      
-      path.splice(editionIndex + 1)
-
-      if(this.searchInput) {
-        path.push(this.searchInput)
-      }
-
-      path.push('')
-      const newPath = path.join('/')
-
-      if(newPath === this.$route.path) {
-        console.warn(newPath)
-      } else {
-        this.$router.push(newPath)
-      }
-    },
-    clearSearch: function() {
-      // ok so url is /whatever/<edition>/ => /whatever/<edition>/<search>/
-      // ok so url is /whatever/<edition>/<oldSearch>/ => /whatever/<edition>/<newSearch>/
-      const path = this.$route.path.split('/')
-
-      // find edition in split path
-      let editionIndex = -1
-      let i = 0
-      while(i < path.length && editionIndex == -1) {
-        if(this.editions.includes(path[i]))
-          editionIndex = i
-
-        ++i
-      }
-      
-      path.splice(editionIndex + 1)
-      path.push('')
-
-      const newPath = path.join('/')
-
-      if(newPath === this.$route.path) {
-        console.warn(newPath)
-      } else {
-        this.$router.push(newPath)
-      }
     }
   },
-  watch: {
-    $route() {
-      this.getContributions()
-    }
+  created: function() {
+    Vue.set(this.resolutions, this.all_res, true)
   },
   mounted: function() {
-    this.searchInput = this.search
-    this.getContributions()
+    this.getRes()
+    this.getAuthors()
   }
 }
