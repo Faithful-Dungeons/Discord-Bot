@@ -1,3 +1,4 @@
+/* global Vue, VueRouter, Vuetify */
 const ContributionPage = () => import('./pages/contribution-page.js')
 const ContributorPage = () => import('./pages/contributor-page.js')
 
@@ -7,11 +8,13 @@ const routes = [
 	{ path: '/', redirect: '/contributions/java/' },
 	{ path: '/contributions/', redirect: '/contributions/java/' },
 	{ path: '/contributions/:edition?/:search?/', component: ContributionPage },
+	{ path: '/contributors/', redirect: '/contributors/all/' },
   { path: '/contributors/:type?/:name?/', component: ContributorPage }
 ]
 
 const router = new VueRouter({ routes })
 
+// eslint-disable-next-line no-unused-vars
 let v = new Vue({
 	router,
 	el: '#app',

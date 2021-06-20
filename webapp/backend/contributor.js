@@ -58,5 +58,22 @@ module.exports = {
     })
 
     return firestorm_users.editFieldBulk(edits)
+  },
+
+  add: function(body) {
+    const element_id = body.id
+
+    const obj = {}
+    const f_arr = ['username', 'type', 'uuid']
+    f_arr.forEach(field_kept => {
+      if(field_kept in body)
+        obj[field_kept] = body[field_kept]
+    })
+
+    return firestorm_users.set(element_id, obj)
+  },
+
+  remove: function(user_id) {
+    return firestorm_users.remove(user_id)
   }
 }

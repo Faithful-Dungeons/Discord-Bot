@@ -15,7 +15,7 @@ export default {
               <img alt="avatar" style="width: 100%; max-width: 250" :src="($vuetify.breakpoint.mdAndUp ? 'https://crafatar.com/renders/body/' : 'https://crafatar.com/renders/head/') + formData.uuid + '?default=MHF_Alex&scale=10&overlay'" />
             </v-col><v-col :class="'col-' + formData.uuid ? '10' : '12'" :sm="formData.uuid ? ($vuetify.breakpoint.mdAndUp ? 9 : 10) : 12">
               <v-form ref="form" lazy-validation>
-              <v-text-field required readonly v-model="formData.id" label="Discord ID"></v-text-field>
+              <v-text-field required :readonly="add == false" v-model="formData.id" label="Discord ID"></v-text-field>
 
                 <v-text-field required clearable v-model="formData.username" label="Username"></v-text-field>
 
@@ -94,7 +94,7 @@ export default {
       const data = JSON.parse(JSON.stringify(this.formData))
       data.password = TwinBcrypt.hashSync(data.password)
       
-      axios.post('/contributors/change', data)
+      axios.post(this.add ? '/contributors/add' : '/contributors/change', data)
       .then(() => {
         this.$root.showSnackBar('Ended successully', 'success')
         this.disableDialog(true)

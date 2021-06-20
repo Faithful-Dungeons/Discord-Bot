@@ -2,7 +2,6 @@
 
 const path = require('path')
 const express = require('express')
-const contributor = require('./ContributorBackend')
 const contributions = require('./backend/contribution')
 const contributors_backend = require('./backend/contributor')
 const TwinBcrypt = require('twin-bcrypt')
@@ -72,15 +71,14 @@ app.get('/contributors/types', function(req, res) {
   })
 })
 
-app.get('/contributors/:type?/:name?/?', function(req, res) {
+app.get('/contributors/:type/:name?/?', function(req, res) {
   let username, type
 
-  if(! ('name' in req.params))
-    username = req.params.type
-  else {
+  if('type' in req.params && req.params.type && req.params.type != 'all')
     type = req.params.type
+  if('name' in req.params && req.params.name) // check if field and value not undefined
     username = req.params.name
-  }
+  
   contributors_backend.search(username, type)
   .then(val => {
     res.setHeader('Content-Type', 'application/json')
@@ -115,25 +113,36 @@ app.post('/contributors/change', function(req, res) {
   })
 })
 
-app.post('/contributors/remove', function(req, res) {
+app.post('/contributors/add', function(req, res) {
   if(!req.body.password || !process.env.WEBAPP_PASSWORD || !TwinBcrypt.compareSync(process.env.WEBAPP_PASSWORD, req.body.password)) {
     res.status(400)
     res.end()
     return
   }
-
-  const push = !!req.body.pushToGithub
-
-  contributor.contributors.remove(req.body.username)
+  
+  contributors_backend.add(req.body)
   .then(() => {
-    if(push) {
-      console.error('puuush it')
-      res.status(500).send({error: 'Saved but you need to push it'})
-      res.end()
-    } else {
-      res.status(200)
-      res.end()
-    }
+    res.status(200)
+    res.end()
+  })
+  .catch(err => {
+    console.error(err)
+    res.status(400)
+    res.end()
+  })
+})
+
+app.post('/contributors/remove', function(req, res) {
+  if(!req.body.password || !process.env.WEBAPP_PASSWORD || !TwinBcrypt.compareSync(process.env.WEBAPP_PASSWORD, req.body.password) || !req.body.id) {
+    res.status(400)
+    res.end()
+    return
+  }
+
+  contributors_backend.remove(req.body.id)
+  .then(() => {
+    res.status(200)
+    res.end()
   })
   .catch(err => {
     console.error(err)

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node --use_strict --trace-warnings index.js",
-    "dev": "./node_modules/.bin/nodemon *.js",
+    "dev": "./node_modules/.bin/nodemon webapp/app.js",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
   "repository": {

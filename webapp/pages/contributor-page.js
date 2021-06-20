@@ -46,7 +46,7 @@ export default {
               :key="contrib.id"
             >
               <v-list-item-avatar>
-                <v-img v-if="contrib.uuid" :src="'https://crafatar.com/renders/head/' + contrib.uuid + '?default=MHF_Alex&overlay'" />
+                <v-img v-if="contrib.uuid" :src="'https://crafatar.com/renders/head/' + contrib.uuid + '?scale=2&default=MHF_Alex&overlay'" />
                 <v-icon v-else style="background: #4e4e4e">mdi-account</v-icon>
               </v-list-item-avatar>
 
@@ -62,7 +62,7 @@ export default {
                 </v-btn>
               </v-list-item-action>
               <v-list-item-action>
-                <v-btn icon @click="askRemove(contrib.username)">
+                <v-btn icon @click="askRemove(contrib)">
                   <v-icon color="white lighten-1">mdi-delete</v-icon>
                 </v-btn>
               </v-list-item-action>
@@ -72,7 +72,7 @@ export default {
         <div v-else><i>No results found.</i></div>
         </div>
       </div>
-      <contributor-remove-confirm :confirm="remove.confirm" :disableDialog="function() { remove.confirm = false; update() }" :username="remove.username"></contributor-remove-confirm>
+      <contributor-remove-confirm :confirm="remove.confirm" :disableDialog="function() { remove.confirm = false; update() }" :data="remove.data"></contributor-remove-confirm>
     </v-container>`,
 	data() {
 		return {
@@ -91,16 +91,13 @@ export default {
       dialogData: {},
       remove: {
         confirm: false,
-        username: ''
+        data: {}
       }
 		}
 	},
   methods: {
     contributorURL(t) {
-      if(t == 'All') {
-        return "/contributors/" + (this.name || '')
-      }
-      return "/contributors/" + (t !== 'All' ? t : '')  + (this.name ? '/' + this.name : '')
+      return "/contributors/" + t  + '/' + (this.name || '')
     },
     send() {
       const data = JSON.parse(JSON.stringify(this.formData))
@@ -181,17 +178,17 @@ export default {
         this.getContributors()
       }
     },
-    askRemove: function(username) {
+    askRemove: function(data) {
+      this.remove.data = data
       this.remove.confirm = true
-      this.remove.username = username
     }
   },
   computed: {
     contributorTypes: function() {
-      return ['All', ...this.types]
+      return ['all', ...this.types]
     },
     type: function() {
-      if(this.$route.params.type && this.types.includes(this.$route.params.type)) {
+      if(this.$route.params.type && this.contributorTypes.includes(this.$route.params.type)) {
         return this.$route.params.type
       }
       return undefined
