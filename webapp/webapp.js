@@ -80,6 +80,7 @@ let v = new Vue({
       themes: {
         dark: {
           primary: '#fafafa',
+          accent:  '#5e3631',
           success: '#22a831',
         },
       }
