@@ -46,7 +46,7 @@ export default {
               :key="contrib.id"
             >
               <v-list-item-avatar>
-                <v-img v-if="contrib.uuid" :src="'https://crafatar.com/renders/head/' + contrib.uuid + '?scale=2&default=MHF_Alex&overlay'" />
+                <v-img v-if="contrib.uuid" :src="'https://visage.surgeplay.com/head/48/' + contrib.uuid" />
                 <v-icon v-else style="background: #4e4e4e">mdi-account</v-icon>
               </v-list-item-avatar>
 

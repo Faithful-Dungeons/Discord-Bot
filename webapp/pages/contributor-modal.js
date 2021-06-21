@@ -12,7 +12,7 @@ export default {
         <v-card-text>
           <v-row>
             <v-col v-if="formData.uuid" class="col-2" :sm="$vuetify.breakpoint.mdAndUp ? 3 : 2">
-              <img alt="avatar" style="width: 100%; max-width: 250" :src="($vuetify.breakpoint.mdAndUp ? 'https://crafatar.com/renders/body/' : 'https://crafatar.com/renders/head/') + formData.uuid + '?default=MHF_Alex&scale=10&overlay'" />
+              <img alt="avatar" style="width: 100%; max-width: 250" :src="($vuetify.breakpoint.mdAndUp ? 'https://visage.surgeplay.com/full/256/' : 'https://visage.surgeplay.com/head/128/') + formData.uuid" />
             </v-col><v-col :class="'col-' + formData.uuid ? '10' : '12'" :sm="formData.uuid ? ($vuetify.breakpoint.mdAndUp ? 9 : 10) : 12">
               <v-form ref="form" lazy-validation>
               <v-text-field required :readonly="add == false" v-model="formData.id" label="Discord ID"></v-text-field>

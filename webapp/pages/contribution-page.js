@@ -16,7 +16,7 @@ export default {
     <div class="my-2 text-h5">Contributor</div>
     <v-responsive
       class="overflow-y-auto"
-      max-height="250"
+      :max-height="maxheight"
     >
       <v-list v-if="contributors.length" two-line color="transparent">
         <v-row>
@@ -31,15 +31,15 @@ export default {
               :key="contrib.id"
             >
               <v-list-item>
-                <v-list-item-avatar>
-                  <v-img v-if="contrib.uuid" :src="'https://crafatar.com/renders/head/' + contrib.uuid + '?scale=2&default=MHF_Alex&overlay'" />
-                  <v-icon v-else style="background: #4e4e4e">mdi-account</v-icon>
-                </v-list-item-avatar>
-
                 <v-list-item-content>
                   <v-list-item-title v-text="contrib.username"></v-list-item-title>
                   <v-list-item-subtitle v-text="contrib.occurences + ' contributions'"></v-list-item-subtitle>
                 </v-list-item-content>
+
+                <v-list-item-avatar height="38" width="38">
+                  <v-img v-if="contrib.uuid" :src="'https://visage.surgeplay.com/head/48/' + contrib.uuid" />
+                  <v-icon v-else style="background: #4e4e4e">mdi-account</v-icon>
+                </v-list-item-avatar>
               </v-list-item>
             </v-card>
           </v-col>
@@ -49,6 +49,7 @@ export default {
   </v-container>`,
 	data() {
 		return {
+      maxheight: 170,
       all_res: 'all',
       resolutions: {},
       contributors: [],
