@@ -1,6 +1,7 @@
 const { ID_FIELD } = require('../../helpers/firestorm')
 const contri = require('../../helpers/firestorm/contributions')
 const users = require('../../helpers/firestorm/users')
+const texture = require('../../helpers/firestorm/texture')
 
 module.exports = {
   resolutions: function() {
@@ -39,12 +40,15 @@ module.exports = {
         return result
       })
   },
-  search: function(contributors_id, resolutions) {
+  search: function(contributors_arr, resolutions) {
+    if(contributors_arr == undefined && resolutions == undefined)
+      return Promise.reject(new Error('Search function parameters undefined'))
+    
     /** @type{import('../../helpers/firestorm').SearchOption[]} */
     const searchOptions = [{
       field: 'contributors',
       criteria: 'array-contains-any',
-      value: contributors_id
+      value: contributors_arr
     }]
 
     if(resolutions) {
@@ -56,5 +60,24 @@ module.exports = {
     }
 
     return contri.search(searchOptions)
+      .then(results => {
+        const texture_ids = results.map(r => r.textureID)
+        return Promise.all([results, texture.searchKeys(texture_ids)])
+      })
+      .then(results => {
+        const contrib_results = results[0]
+        const texture_result = results[1]
+
+        let texture_found
+        for(let i = 0; i < contrib_results.length; ++i) {
+          texture_found = texture_result.filter(r => r[ID_FIELD] == contrib_results[i].textureID)[0]
+
+          if(texture_found && texture_found.name) {
+            contrib_results[i].textureName = texture_found.name
+          }
+        }
+
+        return contrib_results
+      })
   }
 }

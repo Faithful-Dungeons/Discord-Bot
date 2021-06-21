@@ -1,4 +1,4 @@
-/* global axios, Vue */
+/* global axios */
 
 export default {
 	name: 'contribution-page',
@@ -43,7 +43,6 @@ export default {
           >
             <v-avatar
               :class="{ accent: data.item.uuid == undefined, 'text--white': true }"
-              :tile="data.item.uuid == undefined"
               left
             >
               <template v-if="data.item.uuid != undefined">
@@ -79,18 +78,42 @@ export default {
         </template>
       </template>
     </v-autocomplete>
-    <v-btn block color="secondary" @click="getContributions()" :disabled="searchDisabled">Search contributions<v-icon right dark>mdi-magnify</v-icon></v-btn>
+    <v-btn block color="secondary" @click="startSearch()" :disabled="searchDisabled">Search contributions<v-icon right dark>mdi-magnify</v-icon></v-btn>
+
+    <v-list v-if="search.search_results.length" two-line color="rgba(255, 255, 255, 0.08)" class="mt-4">
+      <v-row><v-col :cols="12/listColumns" xs="1"
+          v-for="(contrib_arr, index) in splittedResults"
+          :key="index"
+        >
+        <v-list-item
+          v-for="contrib in contrib_arr"
+          :key="contrib.id"
+        >
+          <v-list-item-avatar>
+            <v-img :src="'https://compliancepack.net/image/icon/compliance_' + contrib.res.slice(1) + 'x.png'" />
+          </v-list-item-avatar>
+
+          <v-list-item-content>
+            <v-list-item-title v-text="(new Date(contrib.date)).toDateString() + ' '+ (!!contrib.textureName ? ' - ' + contrib.textureName : '')"></v-list-item-title>
+            <v-list-item-subtitle v-text="(contrib.contributors||[]).map(id => contributors.filter(c => c.id == id)[0].username || '').join(', ')"></v-list-item-subtitle>
+
+            <div><v-chip label x-small class="mr-1">{{ contrib.res }}</v-chip><v-chip label x-small class="mr-1">#{{contrib.textureID }}</v-chip></div>
+          </v-list-item-content>
+        </v-list-item>
+      </v-col></v-row>
+    </v-list>
+    <div v-else><i>No results found.</i></div>
   </v-container>`,
 	data() {
 		return {
       maxheight: 170,
       form: {
-        resolutions: []
+        resolutions: [] // [{key: 'all', selected: true }]
       },
       all_res: 'all',
       resolutions: {},
       contributors: [],
-      contributors_selected: [],
+      contributors_selected: ['207471947662098432'],
       search: {
         searching: false,
         search_results: []
@@ -115,14 +138,14 @@ export default {
 
       return columns
     },
-    splittedContributors: function() {
+    splittedResults: function() {
       let res = []
       for(let col = 0; col < this.listColumns; ++col) {
         res.push([])
       }
 
       let arrayIndex = 0;
-      this.contributors.forEach(contrib => {
+      this.search.search_results.forEach(contrib => {
         res[arrayIndex].push(contrib)
         arrayIndex = (arrayIndex + 1) % this.listColumns
       })
@@ -148,18 +171,6 @@ export default {
           console.trace(err)
         })
     },
-    getContributions: function() {
-      axios.get('/contributions/get/', {
-        params: {
-          resolutions: this.searchForm.resolutions,
-          authors: this.searchForm.authors
-        }
-      })
-      .then(res => {
-        this.contributions = res
-      })
-      .catch(err => { this.$root.showSnackBar(err, 'error') })
-    },
     remove (id) {
       const index = this.contributors_selected.indexOf(id)
       if (index >= 0) this.contributors_selected.splice(index, 1)
@@ -169,7 +180,27 @@ export default {
         key: name,
         selected: value
       })
-    }
+    },
+    startSearch: function() {
+      this.search.searching = true
+      axios({
+        method: "get",
+        url: "/contributions/get/",
+        params: {
+          resolutions: this.form.resolutions.filter(r => r.selected).map(r => r.key),
+          authors: this.contributors_selected
+        }
+      })
+      .then(res => {
+        console.log(res.data)
+        res.data.sort((a, b) => b.date - a.date)
+        this.search.search_results = res.data
+      })
+      .catch(err => { this.$root.showSnackBar(err, 'error') })
+      .finally(() => {
+        this.search.searching = false
+      })
+    },
   },
   created: function() {
     this.addRes(this.all_res, true)

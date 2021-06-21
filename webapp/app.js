@@ -72,7 +72,12 @@ app.get('/contributions/authors/?', function(req, res) {
 })
 
 app.get('/contributions/get/', function(req, res) {
-  contributions_backend.search(req.params.resolutions, req.params.authors)
+  const params = req.query
+  
+  const authors = params.authors
+  const resolutions = params.resolutions.includes('all') ? undefined : params.resolutions
+
+  contributions_backend.search(authors, resolutions)
   .then(val => {
     res.setHeader('Content-Type', 'application/json')
     res.send(val)
