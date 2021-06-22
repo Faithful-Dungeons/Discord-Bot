@@ -60,7 +60,7 @@ module.exports = firestorm.collection('textures', el => {
     
   }
 
-  /** @returns {String} */
+  /** @returns {Promise<String>} */
   el.getURL = function(resolution, version = undefined) {
     return new Promise((resolve, reject) => {
       const texture_use = require('./texture_use')
