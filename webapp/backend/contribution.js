@@ -28,9 +28,8 @@ module.exports = {
         console.log(ids)
 
       }).catch(err => reject(err))
-
-      
-
+    })
+  }
       // fsprom.readFile(join(ROOT_CONTRIB, edition + '.json'))
       // .then(val => {
       //   val = JSON.parse(val)
@@ -77,6 +76,5 @@ module.exports = {
       //   resolve(val)
       // })
       
-    })
-  }
+   
 }

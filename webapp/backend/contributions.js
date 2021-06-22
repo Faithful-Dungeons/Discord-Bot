@@ -1,7 +1,10 @@
-const { ID_FIELD } = require('../../helpers/firestorm')
-const contri = require('../../helpers/firestorm/contributions')
-const users = require('../../helpers/firestorm/users')
-const texture = require('../../helpers/firestorm/texture')
+const contri       = require('../../helpers/firestorm/contributions')
+const users        = require('../../helpers/firestorm/users')
+const texture      = require('../../helpers/firestorm/texture')
+const uses         = require('../../helpers/firestorm/texture_use')
+const paths        = require('../../helpers/firestorm/texture_paths')
+const firestorm    = require('../../helpers/firestorm/')
+const { textureURL } = require('../../functions/textureURL')
 
 module.exports = {
   resolutions: function() {
@@ -26,7 +29,7 @@ module.exports = {
         const result = []
 
         searchResult.forEach(user => {
-          const user_d_id = user[ID_FIELD]
+          const user_d_id = user[firestorm.ID_FIELD]
           result.push({
             id: user_d_id,
             occurences: occurences[user_d_id],
@@ -44,7 +47,7 @@ module.exports = {
     if(contributors_arr == undefined && resolutions == undefined)
       return Promise.reject(new Error('Search function parameters undefined'))
     
-    /** @type{import('../../helpers/firestorm').SearchOption[]} */
+    /** @type {import('../../helpers/firestorm').SearchOption[]} */
     const searchOptions = [{
       field: 'contributors',
       criteria: 'array-contains-any',
@@ -61,23 +64,74 @@ module.exports = {
 
     return contri.search(searchOptions)
       .then(results => {
-        const texture_ids = results.map(r => r.textureID)
-        return Promise.all([results, texture.searchKeys(texture_ids)])
+        let texture_ids = results.map(r => r.textureID)
+        texture_ids = texture_ids.filter((val, index) => index == texture_ids.indexOf(val)) // remove doublon
+
+        let uses_promise = uses.search([{
+          field: "textureID",
+          criteria: "in",
+          value: texture_ids
+        }])
+
+        return Promise.all([results, texture.searchKeys(texture_ids), uses_promise])
       })
       .then(results => {
         const contrib_results = results[0]
-        const texture_result = results[1]
+        const texture_results = results[1]
+        let uses_results = results[2]
+
+        // remove doublon
+        const uses_object = uses_results.reduce((ag, cv) => {
+          ag[cv.textureID] = cv
+          return ag
+        }, {})
+        uses_results = Object.values(uses_object)
 
         let texture_found
         for(let i = 0; i < contrib_results.length; ++i) {
-          texture_found = texture_result.filter(r => r[ID_FIELD] == contrib_results[i].textureID)[0]
+          texture_found = texture_results.filter(r => r[firestorm.ID_FIELD] == contrib_results[i].textureID)[0]
 
           if(texture_found && texture_found.name) {
             contrib_results[i].textureName = texture_found.name
           }
+          contrib_results[i].edition = uses_object[contrib_results[i].textureID].editions[0]
+          contrib_results[i].useID = uses_object[contrib_results[i].textureID][firestorm.ID_FIELD]
         }
 
+        let uses_ids = uses_results.map(val => val[firestorm.ID_FIELD])
+        let paths_promise = paths.search([{
+          field: "useID",
+          criteria: "in",
+          value: uses_ids
+        }])
+
+        return Promise.all([contrib_results, paths_promise, uses_ids])
+      })
+      .then(results => {
+        const contrib_results = results[0]
+        const paths_results = results[1]
+        const uses_ids = results[2]
+
+        const path_object = paths_results.reduce((ag, cv) => {
+          ag[cv.useID] = cv
+          return ag
+        }, {})
+        
+        let path, version
+        contrib_results.forEach(contrib => {
+
+          if (contrib.useID in path_object) {
+            path = path_object[contrib.useID].path
+            version = path_object[contrib.useID].versions[0]
+            contrib.url = textureURL(contrib.edition, version, path, contrib.res)
+          } else contrib.url = null
+
+          delete contrib.edition
+          delete contrib.useID
+        })
+
         return contrib_results
+
       })
   }
 }

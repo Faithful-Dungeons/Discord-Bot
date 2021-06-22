@@ -47,7 +47,7 @@ module.exports = {
         obj[field_kept] = body[field_kept]
     })
 
-    /** @type{import('../../helpers/firestorm').EditObject[]} */
+    /** @type {import('../../helpers/firestorm').EditObject[]} */
     const edits = Object.keys(obj).map(field => {
       return {
         id: element_id,

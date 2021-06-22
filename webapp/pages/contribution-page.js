@@ -89,8 +89,9 @@ export default {
           v-for="contrib in contrib_arr"
           :key="contrib.id"
         >
-          <v-list-item-avatar>
-            <v-img :src="'https://compliancepack.net/image/icon/compliance_' + contrib.res.slice(1) + 'x.png'" />
+          <v-list-item-avatar tile>
+            <v-img v-if="contrib.url" :src="contrib.url" />
+            <v-img v-else :src="'https://compliancepack.net/image/icon/compliance_' + contrib.res.slice(1) + 'x.png'" />
           </v-list-item-avatar>
 
           <v-list-item-content>
@@ -131,7 +132,7 @@ export default {
 
       if(this.$vuetify.breakpoint.mdAndUp && this.contributors.length >= 6) {
         columns = 2
-        if(this.$vuetify.breakpoint.lgAndUp && this.contributors.length >= 21) {
+        if (this.$vuetify.breakpoint.lgAndUp && this.contributors.length >= 21) {
           columns = 3
         }
       }
@@ -192,7 +193,6 @@ export default {
         }
       })
       .then(res => {
-        console.log(res.data)
         res.data.sort((a, b) => b.date - a.date)
         this.search.search_results = res.data
       })

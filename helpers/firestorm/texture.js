@@ -64,7 +64,7 @@ module.exports = firestorm.collection('textures', el => {
   el.getURL = function(resolution, version = undefined) {
     return new Promise((resolve, reject) => {
       const texture_use = require('./texture_use')
-      const settings    = require('../../ressources/settings')
+      const textureURL = require('../../functions/textureURL')
 
       texture_use.search([{
         field: 'textureID',
@@ -78,33 +78,7 @@ module.exports = firestorm.collection('textures', el => {
             
             let url = undefined
             if (res.length > 0) {
-              if (version === undefined) version = res[0].versions[0]
-              if (edition == 'java') {
-                switch (resolution) {
-                  case 'c32':
-                    url = settings.COMPLIANCE_32X_JAVA_REPOSITORY_JAPPA + version + '/' + res[0].path
-                    break
-                  case 'c64':
-                    url = settings.COMPLIANCE_64X_JAVA_REPOSITORY_JAPPA + version + '/' + res[0].path
-                    break
-                  default:
-                    url = settings.DEFAULT_MC_JAVA_REPOSITORY + version + '/' + res[0].path
-                    break
-                }
-              } else {
-                switch (resolution) {
-                  case 'c32':
-                    url = settings.COMPLIANCE_32X_BEDROCK_REPOSITORY_JAPPA + version + '/' + res[0].path
-                    break
-                  case 'c64':
-                    url = settings.COMPLIANCE_64X_BEDROCK_REPOSITORY_JAPPA + version + '/' + res[0].path
-                    break
-                  default:
-                    url = settings.DEFAULT_MC_BEDROCK_REPOSITORY + version + '/' + res[0].path
-                    break
-                }
-              }
-
+              url = textureURL(edition, version === undefined ? res[0].versions[0] : version, res[0].path, resolution)
               resolve(url)
 
             } else reject('This texture does not have any path!')
