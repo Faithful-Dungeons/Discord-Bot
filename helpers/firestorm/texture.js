@@ -78,10 +78,8 @@ module.exports = firestorm.collection('textures', el => {
             
             let url = undefined
             if (res.length > 0) {
-
+              if (version === undefined) version = res[0].versions[0]
               if (edition == 'java') {
-                if (version === undefined) version = res[0].versions[0]
-
                 switch (resolution) {
                   case 'c32':
                     url = settings.COMPLIANCE_32X_JAVA_REPOSITORY_JAPPA + version + '/' + res[0].path
@@ -94,8 +92,6 @@ module.exports = firestorm.collection('textures', el => {
                     break
                 }
               } else {
-                if (version === undefined) version = res[0].versions[0]
-
                 switch (resolution) {
                   case 'c32':
                     url = settings.COMPLIANCE_32X_BEDROCK_REPOSITORY_JAPPA + version + '/' + res[0].path
