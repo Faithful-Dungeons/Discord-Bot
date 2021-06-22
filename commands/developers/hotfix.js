@@ -30,7 +30,10 @@ module.exports = {
 	async execute(client, message, args) {
 		if (message.author.id === uidR || message.author.id === uidJ || message.author.id === uidD || message.author.id === uidT) {
 			
-			/* Nothing */
+			const texture = await allCollection.texture.get(15)
+			const url = await texture.getURL('c32')
+
+			message.channel.send(url)
 
 		} else return
 	}

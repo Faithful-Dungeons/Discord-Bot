@@ -60,5 +60,68 @@ module.exports = firestorm.collection('textures', el => {
     
   }
 
+  /** @returns {String} */
+  el.getURL = function(resolution, version = undefined) {
+    return new Promise((resolve, reject) => {
+      const texture_use = require('./texture_use')
+      const settings    = require('../../ressources/settings')
+
+      texture_use.search([{
+        field: 'textureID',
+        criteria: '==',
+        value: el[firestorm.ID_FIELD]
+      }]).then(res => {
+
+        if (res.length > 0) {
+          const edition = res[0].editions[0]
+          res[0].paths().then(res => {
+            
+            let url = undefined
+            if (res.length > 0) {
+
+              if (edition == 'java') {
+                if (version === undefined) version = res[0].versions[0]
+
+                switch (resolution) {
+                  case 'c32':
+                    url = settings.COMPLIANCE_32X_JAVA_REPOSITORY_JAPPA + version + '/' + res[0].path
+                    break
+                  case 'c64':
+                    url = settings.COMPLIANCE_64X_JAVA_REPOSITORY_JAPPA + version + '/' + res[0].path
+                    break
+                  default:
+                    url = settings.DEFAULT_MC_JAVA_REPOSITORY + version + '/' + res[0].path
+                    break
+                }
+              } else {
+                if (version === undefined) version = res[0].versions[0]
+
+                switch (resolution) {
+                  case 'c32':
+                    url = settings.COMPLIANCE_32X_BEDROCK_REPOSITORY_JAPPA + version + '/' + res[0].path
+                    break
+                  case 'c64':
+                    url = settings.COMPLIANCE_64X_BEDROCK_REPOSITORY_JAPPA + version + '/' + res[0].path
+                    break
+                  default:
+                    url = settings.DEFAULT_MC_BEDROCK_REPOSITORY + version + '/' + res[0].path
+                    break
+                }
+              }
+
+              resolve(url)
+
+            } else reject('This texture does not have any path!')
+            
+
+          }).catch(res => reject(res))
+
+        } else reject('This texture does not have any uses! ')
+
+      }).catch(res => reject(res))
+      
+    })
+  }
+
   return el
 })
