@@ -1,6 +1,7 @@
 /* global Vue, VueRouter, Vuetify */
 const ContributionPage = () => import('./pages/contribution-page.js')
 const ContributorPage = () => import('./pages/contributor-page.js')
+const ContributorStatsPage = () => import('./pages/contribution-stats-page.js')
 
 Vue.config.devtools = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
 
@@ -8,7 +9,8 @@ const routes = [
 	{ path: '/', redirect: '/contributions/' },
 	{ path: '/contributions/', component: ContributionPage },
 	{ path: '/contributors/', redirect: '/contributors/all/' },
-  { path: '/contributors/:type?/:name?/', component: ContributorPage }
+  { path: '/contributors/:type?/:name?/', component: ContributorPage },
+  { path: '/contributions-stats/', component: ContributorStatsPage },
 ]
 
 const router = new VueRouter({ routes })
@@ -20,7 +22,8 @@ let v = new Vue({
   data: {
     tabs: [
       { to : "/contributions/", label: "Contributions" },
-      { to : "/contributors/", label : "Contributors" }
+      { to : "/contributors/", label : "Contributors" },
+      { to : "/contributions-stats/", label : "Contributions Stats" }
     ],
     currenttab: undefined,
     bg: 'transparent',

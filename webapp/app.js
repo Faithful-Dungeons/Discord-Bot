@@ -5,6 +5,7 @@ const express = require('express')
 const contributions = require('./backend/contribution')
 const contributions_backend = require('./backend/contributions')
 const contributors_backend = require('./backend/contributor')
+const contributionsStats_backend = require('./backend/contributions-stats')
 const TwinBcrypt = require('twin-bcrypt')
 require('dotenv').config()
 
@@ -184,6 +185,22 @@ app.post('/contributors/remove', function(req, res) {
   .catch(err => {
     console.error(err)
     res.status(400)
+    res.end()
+  })
+})
+
+app.get('/contributions/stats/', function(req, res) {
+  contributionsStats_backend.stats()
+  .then(val => {
+    res.setHeader('Content-Type', 'application/json')
+    res.send(val)
+  })
+  .catch(err => {
+    console.trace(err)
+    res.status(400)
+    res.send(err)
+  })
+  .finally(() => {
     res.end()
   })
 })
