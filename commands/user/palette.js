@@ -1,13 +1,13 @@
 const prefix = process.env.PREFIX;
 
-const strings = require('../../ressources/strings');
+const strings = require('../../resources/strings');
 
 const { palette }  = require('../../functions/textures/palette');
 const { warnUser } = require('../../helpers/warnUser');
 
 module.exports = {
 	name: 'palette',
-	aliases: [ 'colors', 'color', 'colormap', 'p', 'colours', 'colour' ],
+	aliases: ['p', 'colors', 'colormap', 'colours'],
 	description: strings.HELP_DESC_PALETTE,
 	guildOnly: false,
 	uses: strings.COMMAND_USES_ANYONE,

@@ -1,4 +1,4 @@
-const settings = require('../../ressources/settings')
+const settings = require('../../resources/settings')
 const users    = require('../../helpers/firestorm/users')
 
 /**
@@ -11,10 +11,10 @@ async function removeMutedRole(client, userID) {
 		settings.CDUNGEONS_ID, 
 		settings.CMODS_ID, 
 		settings.CTWEAKS_ID,
-		settings.CADDONS_ID, 
+		settings.CEXTRAS_ID, 
 		settings.C64_ID, 
 		settings.C32_ID, 
-		'720677267424018526' // Bot dev discord
+		// '720677267424018526' // Bot dev discord
 	]
 	
 	for (var i = 0; i < servers.length; i++) {
@@ -26,6 +26,9 @@ async function removeMutedRole(client, userID) {
 
 	// get the user from the db
 	let user = await users.searchKeys([userID])
+
+	// you guys are supposing you found the user, maybe he doesn't exist
+	if(user === undefined) user = [{}] // FIX for proprerty muted of undefined
 
 	// replace it's muted obj with an empty one
 	user[0].muted = new Object()

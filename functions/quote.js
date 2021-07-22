@@ -1,6 +1,7 @@
 const Discord  = require('discord.js')
-const settings = require('../ressources/settings')
-const colors   = require('../ressources/colors')
+const settings = require('../resources/settings')
+const colors   = require('../resources/colors')
+
 const { addDeleteReact } = require('../helpers/addDeleteReact')
 
 /**
@@ -13,28 +14,31 @@ async function quote(msg) {
 	const args = msg.content.split(' ')
 	let i, ids, embed, file
 
+	// no private messages
 	if (msg.channel.type === 'dm') return
+
+	// cancel if quote is in texture submission channel
+	if (
+		msg.channel.id === settings.C32_SUBMIT_TEXTURES ||
+		msg.channel.id === settings.C64_SUBMIT_TEXTURES ||
+		msg.channel.id === settings.CDUNGEONS_SUBMIT
+	) return
 
 	// do not quote behave command
 	if(args[0].startsWith(process.env.PREFIX + 'behave')) return
 
-	/**
-	 * If a new type of URL for discord message is added, add it here
-	 */
-	for (i = 0; i < args.length; i++) {
-		if (args[i].startsWith('https://canary.discord.com/channels/')) {
-			ids = new URL(args[i]).pathname.replace('/channels/','').split('/')
-			break
-		}
-		if (args[i].startsWith('https://discord.com/channels/')) {
-			ids = new URL(args[i]).pathname.replace('/channels/','').replace('message','').split('/')
-			break
-		}
-		if (args[i].startsWith('https://discordapp.com/channels/')) {
-			ids = new URL(args[i]).pathname.replace('/channels/','').split('/')
-			break
-		}
-	}
+	// regex tests here https://regex101.com/r/1cIYqf/1/
+	// This fixes bugs with incorrect body messages with no space or incorrect match
+	const regex = /https:\/\/(canary\.)?discord(app)?\.com\/channels\/([0-9]+)\/([0-9]+)\/([0-9]+)/g
+	const str = args.join(' ')
+
+	let matches = regex.exec(str)
+
+	// no message match
+	if(matches === null) return
+
+	// group 3 for guild, group 4 for channel, group 5 for message
+	ids = [matches[3] ,matches[4], matches[5]]
 
 	if (ids[0] != undefined && msg.guild.id == ids[0]) {
 		let channel = msg.guild.channels.cache.get(ids[1])
@@ -49,11 +53,11 @@ async function quote(msg) {
 			if (message.embeds[0].url != undefined) embed.setURL(message.embeds[0].url)
 			
 			if (message.embeds[0].author != undefined && !message.embeds[0].author.name.startsWith('Embed posted by')) {
-				embed.setThumbnail(message.embeds[0].author.iconURL)
-				embed.setAuthor(`Embed sent by ${message.author.tag} (${message.embeds[0].author.name})`, settings.QUOTE_IMG)
+				embed.setThumbnail(settings.QUOTE_IMG)
+				embed.setAuthor(`Embed sent by ${message.author.tag} (${message.embeds[0].author.name})`, message.embeds[0].author.iconURL)
 			} else {
-				embed.setThumbnail(message.author.displayAvatarURL())
-				embed.setAuthor(`Embed sent by ${message.author.tag}`, settings.QUOTE_IMG)
+				embed.setThumbnail(settings.QUOTE_IMG)
+				embed.setAuthor(`Embed sent by ${message.author.tag}`, message.author.displayAvatarURL())
 			}
 
 			if (message.embeds[0].fields != undefined) {

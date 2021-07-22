@@ -1,4 +1,4 @@
-const settings = require('../../ressources/settings')
+const settings = require('../../resources/settings')
 const users    = require('../../helpers/firestorm/users')
 
 async function addMutedRole(client, userID, seconds) {
@@ -6,10 +6,10 @@ async function addMutedRole(client, userID, seconds) {
 		settings.CDUNGEONS_ID, 
 		settings.CMODS_ID, 
 		settings.CTWEAKS_ID, 
-		settings.CADDONS_ID, 
+		settings.CEXTRAS_ID, 
 		settings.C64_ID, 
 		settings.C32_ID, 
-		'720677267424018526' // Bot dev discord
+		// '720677267424018526' // Bot dev discord
 	]
 	
 	// add roles to the discord user
@@ -29,7 +29,7 @@ async function addMutedRole(client, userID, seconds) {
 	endAt.setSeconds(endAt.getSeconds() + seconds)
 
 	// if infinite mute:
-	if (seconds < 0) endAt = 0
+	if (seconds < 0) endAt = 0 // beware this is not a date
 
 	// get the user from the db
 	let user = await users.searchKeys([ userID ])
@@ -47,7 +47,7 @@ async function addMutedRole(client, userID, seconds) {
 	// set start & end timestamp
 	user[0].muted = {
 		start: startAt.getTime(),
-		end: endAt.getTime()
+		end: typeof(endAt) === 'object' && 'getTime' in endAt ? endAt.getTime() : endAt.toString() // fix for getTime is not a function
 	}
 	users.set(userID, user[0])
 }

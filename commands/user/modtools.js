@@ -1,9 +1,9 @@
 const prefix = process.env.PREFIX;
 
 const Discord  = require("discord.js");
-const settings = require('../../ressources/settings');
-const strings  = require('../../ressources/strings');
-const colors   = require('../../ressources/colors');
+const settings = require('../../resources/settings');
+const strings  = require('../../resources/strings');
+const colors   = require('../../resources/colors');
 
 const { warnUser } = require('../../helpers/warnUser');
 
@@ -14,7 +14,7 @@ module.exports = {
 	uses: strings.COMMAND_USES_ANYONE_DUNGEONS,
 	syntax: `${prefix}modtools`,
 	async execute(client, message, args) {
-		if (message.guild.id !== settings.CDUNGEONS_ID) return warnUser(message, 'This command can only be used in the Compliance Dungeons server!');
+		if (message.guild.id !== settings.CEXTRAS_ID) return warnUser(message, 'This command can only be used in the Compliance Extras server!');
 
 		const embed = new Discord.MessageEmbed()
 			.setTitle('Tools for making Dungeons mods:')

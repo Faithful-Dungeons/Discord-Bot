@@ -1,8 +1,8 @@
 const prefix  = process.env.PREFIX;
 
 const Discord = require("discord.js");
-const colors  = require('../../ressources/colors');
-const strings = require('../../ressources/strings');
+const colors  = require('../../resources/colors');
+const strings = require('../../resources/strings');
 
 const { warnUser } = require('../../helpers/warnUser');
 
@@ -24,7 +24,7 @@ module.exports = {
 			.setDescription(`[Jump to message](${message.url})\n\n\`\`\`${args.join(' ')}\`\`\``)
 			.setTimestamp()
 
-		if (message.channel.type === 'dm') embed.addField('Channel:', 'Private message (DM)')
+		if (message.channel.type === 'dm') embed.addField('Channel:', '`Private message (DM)`')
 		else {
 			embed.addFields(
 				{ name: 'Server:', value: `\`${message.guild.name}\`` },

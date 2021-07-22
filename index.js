@@ -24,6 +24,7 @@ const UIDA = [
 const prefix      = process.env.PREFIX
 const DEBUG       = (process.env.DEBUG.toLowerCase() == 'true')
 const MAINTENANCE = (process.env.MAINTENANCE.toLowerCase() == 'true')
+const DEV         = (process.env.DEV.toLowerCase() == 'true')
 
 // Helpers:
 const { warnUser } = require('./helpers/warnUser')
@@ -50,15 +51,21 @@ const { inviteDetection } = require('./functions/moderation/inviteDetection')
 
 const { submitTexture }  = require('./functions/textures/submission/submitTexture')
 const { editSubmission } = require('./functions/textures/submission/editSubmission')
+const { saveDB }         = require('./functions/saveDB')
+
+const { manageExtraRoles } = require('./functions/manageExtraRoles')
 
 // Resources:
-const colors  = require('./ressources/colors')
-const strings = require('./ressources/strings')
+const colors  = require('./resources/colors')
+const strings = require('./resources/strings')
+const emojis  = require('./resources/emojis')
 
 // Import settings & commands handler:
 const commandFiles = walkSync('./commands').filter(file => file.endsWith('.js'))
-const settings     = require('./ressources/settings')
-const { addDeleteReact } = require('./helpers/addDeleteReact')
+const settings     = require('./resources/settings')
+
+const { addDeleteReact }     = require('./helpers/addDeleteReact')
+const { restartAutoDestroy } = require('./functions/restartAutoDestroy')
 
 /**
  * SCHEDULED FUNCTIONS : Texture Submission
@@ -83,6 +90,7 @@ const downloadToBot = new cron.CronJob('15 0 * * *', async () => {
 })
 let pushToGithub = new cron.CronJob('30 0 * * *', async () => {
 	await pushTextures()
+	await saveDB(`Daily Backup`)
 })
 
 function doMCUpdateCheck () {
@@ -116,13 +124,17 @@ if (DEBUG) console.table(commands)
 client.on('ready', async () => {
 	console.log(`┌─────────────────────────────────────────────────────────────┐`)
 	console.log(`│                                                             │`)
-	console.log(`│  ─=≡Σ((( つ◕ل͜◕)つ                                           │`)
+	console.log(`│  ─=≡Σ((( つ◕ل͜◕)つ                                         │`)
 	console.log(`│ JavaScript is a pain, but I'm fine, I hope...               │`)
 	console.log(`│                                                             │`)
 	console.log(`└─────────────────────────────────────────────────────────────┘\n\n`)
 
 	if (MAINTENANCE) client.user.setPresence({ activity: { name: 'maintenance' }, status: 'dnd' })
 	else client.user.setActivity(`${prefix}help`, {type: 'LISTENING'})
+
+	await restartAutoDestroy(client)
+
+	if (DEV) return
 
 	/**
 	 * START TEXTURE SUBMISSION PROCESS
@@ -152,7 +164,6 @@ client.on('ready', async () => {
 	/**
 	 * UPDATE MEMBERS
 	 */
-	updateMembers(client, settings.CTWEAKS_ID, settings.CTWEAKS_COUNTER)
 	updateMembers(client, settings.C32_ID, settings.C32_COUNTER)
 })
 
@@ -160,7 +171,7 @@ client.on('ready', async () => {
  * MEMBER JOIN
  */
 client.on('guildMemberAdd', async () =>{
-	updateMembers(client, settings.CTWEAKS_ID, settings.CTWEAKS_COUNTER)
+	if (DEV) return
 	updateMembers(client, settings.C32_ID, settings.C32_COUNTER)
 })
 
@@ -168,7 +179,7 @@ client.on('guildMemberAdd', async () =>{
  * MEMBER LEFT
  */
 client.on('guildMemberRemove', async () => {
-	updateMembers(client, settings.CTWEAKS_ID, settings.CTWEAKS_COUNTER)
+	if (DEV) return
 	updateMembers(client, settings.C32_ID, settings.C32_COUNTER)
 })
 
@@ -176,6 +187,7 @@ client.on('guildMemberRemove', async () => {
  * BOT ADD OR REMOVE
  */
 client.on('guildCreate', async guild =>{
+	if (DEV) return
 	var embed = new Discord.MessageEmbed()
 		.setTitle(`Thanks for adding me to ${guild.name}!`)
 		.addFields(
@@ -214,10 +226,12 @@ client.on('message', async message => {
 		const embed = new Discord.MessageEmbed()
 			.setColor(colors.RED)
 			.setTitle(strings.BOT_ERROR)
-			.setDescription(`${strings.COMMAND_ERROR}\nError:\n${error}`)
+			.setThumbnail(settings.ERROR_IMG)
+			.setDescription(`${strings.COMMAND_ERROR}\nError for the developers:\n${error}`)
 
-		await message.inlineReply(embed)
+		let msgEmbed = await message.inlineReply(embed)
 		await message.react('❌')
+		return addDeleteReact(msgEmbed, message, true)
 	})
 })
 
@@ -225,6 +239,7 @@ client.on('message', async message => {
  * REACTION EVENT LISTENER
  */
 client.on('messageReactionAdd', async (reaction, user) => {
+	if (DEV) return
 	if (user.bot) return
 	if (reaction.message.partial) await reaction.message.fetch() // dark magic to fetch message that are sent before the start of the bot
 	
@@ -242,14 +257,17 @@ client.on('messageReactionAdd', async (reaction, user) => {
 		reaction.message.channel.id === settings.C64_SUBMIT_REVOTE   ||
 		reaction.message.channel.id === settings.C64_RESULTS         ||
 
-		reaction.message.channel.id === settings.CDUNGEONS_SUBMIT 			// dungeons server
+		reaction.message.channel.id === settings.CDUNGEONS_SUBMIT // dungeons server REMOVE THIS ASAP
 		) editSubmission(client, reaction, user)
+	
+	if (reaction.message.channel.id === settings.CEXTRAS_ROLES) manageExtraRoles(client, reaction, user)
 })
 
 /**
  * EASTER EGGS & CUSTOM COMMANDS:
  */
 client.on('message', async message => {
+	if (DEV) return
 	// Avoid message WITH prefix & bot messages
 	if (message.content.startsWith(prefix) || message.author.bot) return
 
@@ -270,10 +288,10 @@ client.on('message', async message => {
 	}
 
 	if (message.content.toLowerCase() === 'band') {
-		return ['🎶', '🎤', '🎸', '🥁', '🪘', '🎺', '🎷', '🎹', '🪗', '🎻', '🎵'].forEach(async emoji => { await message.react(emoji) })
+		return ['🎤', '🎸', '🥁', '🪘', '🎺', '🎷', '🎹', '🪗', '🎻'].forEach(async emoji => { await message.react(emoji) })
 	}
 
-	if (message.content === 'monke Bob') {
+	if (message.content.toLowerCase() === 'monke') {
 		return ['🎷','🐒'].forEach(async emoji => { await message.react(emoji) })
 	}
 
@@ -294,7 +312,7 @@ client.on('message', async message => {
 		message.content.includes('https://canary.discord.com/channels/') || 
 		message.content.includes('https://discord.com/channels/')        || 
 		message.content.includes('https://discordapp.com/channels')
-	)	quote(message)
+	) quote(message)
 
 	/**
 	 * TEXTURE ID QUOTE
@@ -336,11 +354,23 @@ client.on('message', async message => {
 			if (!msg.deleted) await msg.delete({timeout: 30000})
 			if (!message.deleted) await message.delete({timeout: 10})
 		} else {
-			await message.react('814569395493011477')
-			await message.react('814569427546144812')
+			await message.react(emojis.UPVOTE)
+			await message.react(emojis.DOWNVOTE)
 		}
 	}
 
+})
+
+// eslint-disable-next-line no-unused-vars
+process.on('unhandledRejection', (reason, promise) => {
+	const errorChannel = client.channels.cache.find(channel => channel.id == "853547435782701076")
+	const errorEmbed = new Discord.MessageEmbed()
+		.setTitle('Unhandled Rejection:')
+		.setDescription("```fix\n" + (reason.stack || reason) +"```")
+		.setColor(colors.RED)
+		.setTimestamp()
+
+	errorChannel.send(errorEmbed)
 })
 
 // Login the bot

@@ -4,9 +4,9 @@ const Discord   = require("discord.js");
 const client    = new Discord.Client();
 client.commands = new Discord.Collection();
 
-const settings = require('../../ressources/settings');
-const colors   = require('../../ressources/colors');
-const strings  = require('../../ressources/strings');
+const settings = require('../../resources/settings');
+const colors   = require('../../resources/colors');
+const strings  = require('../../resources/strings');
 
 const { warnUser } = require('../../helpers/warnUser');
 
@@ -32,7 +32,7 @@ module.exports = {
 		if (!args.length) return showProfile(message, user)
 
 		// what we want
-		if (args[0].startsWith('<@') && message.member.hasPermission('ADMINISTRATOR')) {
+		if (args[0].startsWith('<@') && message.member.roles.cache.some(role => role.name.includes("Administrator") || role.name.includes("Moderator") || role.name.includes("God"))) {
 
 			let userID = args[0].replace('<@', '').replace('>', '').replace('!', '')
 
@@ -45,7 +45,7 @@ module.exports = {
 
 			return showProfile(message, user, userID)
 		}
-		else if (args[0].startsWith('<@') && !message.member.hasPermission('ADMINISTRATOR'))
+		else if (args[0].startsWith('<@') && !message.member.roles.cache.some(role => role.name.includes("Administrator") || role.name.includes("Moderator") || role.name.includes("God")))
 			return warnUser(message, strings.COMMAND_NO_PERMISSION)
 		else if (args[0] !== 'username' && args[0] !== 'uuid' && args[0] !== 'show')
 			return warnUser(message, strings.COMMAND_WRONG_ARGUMENTS_GIVEN)

@@ -4,7 +4,7 @@ const uidR = process.env.UIDR;
 const uidJ = process.env.UIDJ;
 const uidD = process.env.UIDD;
 
-const strings = require('../../ressources/strings');
+const strings = require('../../resources/strings');
 
 const { translate } = require('../../functions/translate');
 const { warnUser }  = require('../../helpers/warnUser');
@@ -25,7 +25,7 @@ module.exports = {
 			}
 
 			return await translate(message, args.slice(1), args);
-		} else warnUser(message, 'This command is currently disabled for testing!');
+		} else warnUser(message, strings.COMMAND_DISABLED_FOR_TEST);
 
 		async function PreviousMessage() {
 			var found = false;
@@ -43,12 +43,12 @@ module.exports = {
 						break;
 					}
 				} catch (e) {
-					return warnUser(message, 'I didn\'t find any message to translate!');
+					return warnUser(message, strings.TRANSLATE_NO_MESSAGES);
 				}
 			}
 
 			if (found) await translate(message, content, args);
-			else return warnUser(message, 'I didn\'t find any message to translate!');
+			else return warnUser(message, strings.TRANSLATE_NO_MESSAGES);
 		}
 
 	}
