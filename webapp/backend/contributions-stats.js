@@ -1,4 +1,5 @@
 const contri = require('../../helpers/firestorm/contributions')
+const moment = require('moment')
 
 module.exports = {
   stats: function() {
@@ -23,6 +24,8 @@ module.exports = {
         result.totalTextures = textures.filter((el, index) => textures.indexOf(el) === index).length
 
         result.contrib = Object.values(res.reduce((ac, val) => {
+          val.date = moment(new Date(val.date)).startOf('day').unix() * 1000
+
           if(!(val.date in ac)) {
             // start for date
             ac[val.date] = {
@@ -40,6 +43,10 @@ module.exports = {
 
           return ac
         }, {}))
+
+        result.contrib.sort((a, b) => a.date - b.date)
+
+        console.log(result.contrib)
 
         return result
       })

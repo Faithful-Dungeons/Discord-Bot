@@ -29,11 +29,17 @@ module.exports = {
 	args: true,
 	async execute(client, message, args) {
 		if (message.author.id === uidR || message.author.id === uidJ || message.author.id === uidD || message.author.id === uidT) {
-			
-			const texture = await allCollection.texture.get(15)
-			const url = await texture.getURL('c32')
+		
+			let contributions = await allCollection.contributions.read_raw()
+			const wrongDateID = []
 
-			message.channel.send(url)
+			for (const contributionID in contributions) {
+				if (contributions[contributionID].date < '1609542000000')
+					wrongDateID.push(contributionID)
+			}
+
+			let result = await allCollection.contributions.removeBulk(wrongDateID)
+			console.log(result)
 
 		} else return
 	}
