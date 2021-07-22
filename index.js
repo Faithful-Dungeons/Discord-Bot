@@ -32,6 +32,7 @@ const { walkSync } = require('./helpers/walkSync')
 
 // Functions:
 const { updateMembers } = require('./functions/moderation/updateMembers')
+const { syncMembers } = require('./functions/moderation/syncMembers')
 
 const { textureIDQuote } = require('./functions/textures/textureIDQuote')
 const { quote }          = require('./functions/quote')
@@ -165,6 +166,12 @@ client.on('ready', async () => {
 	 * UPDATE MEMBERS
 	 */
 	updateMembers(client, settings.C32_ID, settings.C32_COUNTER)
+	
+	/**
+	 * FETCH MEMBERS DATA
+	 */
+	syncMembers(client, [settings.C32_ID, settings.C64_ID, settings.CEXTRAS_ID])
+
 })
 
 /**
@@ -363,6 +370,8 @@ client.on('message', async message => {
 
 // eslint-disable-next-line no-unused-vars
 process.on('unhandledRejection', (reason, promise) => {
+	if (DEV) return console.trace(reason.stack || reason)
+
 	const errorChannel = client.channels.cache.find(channel => channel.id == "853547435782701076")
 	const errorEmbed = new Discord.MessageEmbed()
 		.setTitle('Unhandled Rejection:')
