@@ -8,13 +8,11 @@ module.exports = {
     return textures.read_raw()
       .then((textures) => {
         // create array type
-        let types = [ "BL" ]
+        let types = []
 
         for (const textureID in textures) {
-          types = [ ...types, ...textures[textureID].type ]
+          if (Array.isArray(textures[textureID].type)) types = [ ...types, ...textures[textureID].type ]
         }
-
-        console.log(types)
 
         // delete duplicates
         types = types.filter((t, index) => {
@@ -29,16 +27,16 @@ module.exports = {
 
     /** @type {import('../../helpers/firestorm').SearchOption[]} */
     const searchOptions = [{
-      field: 'name',
-      criteria: 'includes',
-      value: texture_name
+      field: 'type',
+      criteria: 'array-contains',
+      value: texture_type
     }]
 
-    if (texture_type) {
+    if (texture_name != undefined) {
       searchOptions.push({
-        field: 'types',
-        criteria: 'array-contains-any',
-        value: texture_type
+        field: 'name',
+        criteria: 'includes',
+        value: texture_name
       })
     }
 
