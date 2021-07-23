@@ -26,17 +26,21 @@ module.exports = {
     if (!texture_name && !texture_type) return Promise.reject(new Error('Search function parameters undefined'))
 
     /** @type {import('../../helpers/firestorm').SearchOption[]} */
-    const searchOptions = [{
-      field: 'type',
-      criteria: 'array-contains',
-      value: texture_type
-    }]
+    const searchOptions = []
 
     if (texture_name != undefined) {
       searchOptions.push({
         field: 'name',
         criteria: 'includes',
         value: texture_name
+      })
+    }
+
+    if (texture_type != undefined) {
+      searchOptions.push({
+        field: 'type',
+        criteria: 'array-contains',
+        value: texture_type
       })
     }
 
