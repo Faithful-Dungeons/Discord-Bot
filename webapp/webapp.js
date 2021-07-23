@@ -2,6 +2,7 @@
 const ContributionPage = () => import('./pages/contribution-page.js')
 const ContributorPage = () => import('./pages/contributor-page.js')
 const ContributorStatsPage = () => import('./pages/contribution-stats-page.js')
+const TexturePage = () => import('./pages/texture-page.js')
 
 Vue.config.devtools = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
 
@@ -11,6 +12,8 @@ const routes = [
 	{ path: '/contributors/', redirect: '/contributors/all/' },
   { path: '/contributors/:type?/:name?/', component: ContributorPage },
   { path: '/contributions-stats/', component: ContributorStatsPage },
+  { path: '/textures/', redirect: '/textures/all/' },
+  { path: '/textures/:type?/:name?/', component: TexturePage },
 ]
 
 const router = new VueRouter({ routes })
@@ -22,8 +25,9 @@ let v = new Vue({
   data: {
     tabs: [
       { to : "/contributions/", label: "Contributions" },
-      { to : "/contributors/", label : "Contributors" },
-      { to : "/contributions-stats/", label : "Contributions Stats" }
+      { to: "/contributors/", label: "Contributors" },
+      { to: "/contributions-stats/", label: "Contributions Stats" },
+      { to: "/textures/", label: "Textures" }
     ],
     currenttab: undefined,
     bg: 'transparent',

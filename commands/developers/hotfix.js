@@ -30,16 +30,7 @@ module.exports = {
 	async execute(client, message, args) {
 		if (message.author.id === uidR || message.author.id === uidJ || message.author.id === uidD || message.author.id === uidT) {
 		
-			let contributions = await allCollection.contributions.read_raw()
-			const wrongDateID = []
-
-			for (const contributionID in contributions) {
-				if (contributions[contributionID].date < '1609542000000')
-					wrongDateID.push(contributionID)
-			}
-
-			let result = await allCollection.contributions.removeBulk(wrongDateID)
-			console.log(result)
+			/* */
 
 		} else return
 	}

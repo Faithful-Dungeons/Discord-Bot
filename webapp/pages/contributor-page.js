@@ -141,7 +141,7 @@ export default {
         this.types = response.data
       })
       .catch(function (error) {
-        console.error(error);
+        console.error(error)
       })
       .finally(() => {
         Vue.nextTick(() => {

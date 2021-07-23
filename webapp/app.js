@@ -2,10 +2,11 @@
 
 const path = require('path')
 const express = require('express')
-const contributions = require('./backend/contribution')
+// const contributions = require('./backend/contribution')
 const contributions_backend = require('./backend/contributions')
 const contributors_backend = require('./backend/contributor')
 const contributionsStats_backend = require('./backend/contributions-stats')
+const textures_backend = require('./backend/textures')
 const TwinBcrypt = require('twin-bcrypt')
 require('dotenv').config()
 
@@ -203,4 +204,60 @@ app.get('/contributions/stats/', function(req, res) {
   .finally(() => {
     res.end()
   })
+})
+
+app.get('/textures/all/?', function (req, res) {
+  textures_backend.textures()
+    .then(val => {
+      res.setHeader('Content-Type', 'application/json')
+      res.send(val)
+    })
+    .catch(err => {
+      console.trace(err)
+      res.status(400)
+      res.send(err)
+    })
+    .finally(() => {
+      res.end()
+    })
+})
+
+
+app.get('/textures/types', function (req, res) {
+  textures_backend.textureTypes()
+    .then(val => {
+      res.setHeader('Content-Type', 'application/json')
+      res.send(val)
+    })
+    .catch(err => {
+      console.error(err)
+      res.status(400)
+      res.send(err)
+    })
+    .finally(() => {
+      res.end()
+    })
+})
+
+app.get('/textures/:type/:name?/?', function (req, res) {
+  let name, type
+
+  if ('type' in req.params && req.params.type && req.params.type != 'all')
+    type = req.params.type
+  if ('name' in req.params && req.params.name) // check if field and value not undefined
+    name = req.params.name
+
+  textures_backend.search(name, type)
+    .then(val => {
+      res.setHeader('Content-Type', 'application/json')
+      res.send(val)
+    })
+    .catch(err => {
+      console.error(err)
+      res.status(400)
+      res.send(err)
+    })
+    .finally(() => {
+      res.end()
+    })
 })

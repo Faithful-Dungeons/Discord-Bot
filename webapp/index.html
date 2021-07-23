@@ -12,7 +12,7 @@
   <v-app id="app">
     <v-app-bar flat dense bar app :color="bg">
       <span class="mr-2 d-flex noselect">
-        <img src="https://compliancepack.net/image/home/logo.png" style="max-height: 100%; height: 30px; filter: brightness(0) invert(1);"><span class="px-2 subtitle-1"> Web app</span>
+        <img src="https://compliancepack.net/image/home/logo.png" style="max-height: 100%; height: 30px; filter: brightness(0) invert(1);"><span class="px-2 subtitle-1"> Web App</span>
       </span>
       <v-tabs v-model="currenttab" :value="tabselected">
         <v-tab v-for="(tab, index) in tabs" :key="tab.to" :to="tab.to">{{ tab.label }}</v-tab>
@@ -45,6 +45,7 @@
   <script src="https://cdn.jsdelivr.net/npm/twin-bcrypt@2/twin-bcrypt.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue-router@3.5.1/dist/vue-router.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <!-- <script src="https://unpkg.com/vue-scroll-loader"></script> -->
   <link rel="stylesheet" href="/webapp.css">
   <script src="/webapp.js" type="module"></script>
 </body>
